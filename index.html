@@ -77,7 +77,7 @@
   .hero .lede strong{color:var(--ink)}
   .patch{width:min(360px,80vw);margin:0 auto;filter:drop-shadow(6px 8px 0 rgba(51,38,26,.18));transform:rotate(3deg)}
   .est{font-family:var(--body);font-weight:700;font-size:13px;letter-spacing:.22em;color:var(--red);text-transform:uppercase;margin-bottom:6px}
-  @media(max-width:880px){.hero .wrap{grid-template-columns:1fr}.patch{order:-1;width:min(260px,70vw)}}
+  @media(max-width:880px){.hero{padding:28px 0 56px}.hero .wrap{grid-template-columns:1fr;gap:28px}.patch{order:-1;width:min(260px,70vw)}}
 
   /* SCOREBOARD */
   .scoreboard{background:var(--navy);color:var(--cream);padding:46px 0;border-top:4px solid var(--gold);border-bottom:4px solid var(--gold)}
@@ -111,8 +111,8 @@
   .ticket::before{content:"";position:absolute;top:0;bottom:0;right:138px;border-left:3px dashed var(--ink);opacity:.5}
   .ticket .main{padding:30px 32px}
   .ticket .admit{font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--red)}
-  .ticket .price{font-family:var(--disp);font-size:60px;color:var(--ink);line-height:1.05}
-  .ticket .price small{font-size:20px;color:var(--ink-soft)}
+  .ticket .price{font-family:var(--disp);font-size:60px;color:var(--ink);line-height:1}
+  .ticket .price small{display:block;font-size:20px;color:var(--ink-soft);margin-top:2px;line-height:1.2}
   .ticket ul{list-style:none;margin-top:12px}
   .ticket li{font-size:14.5px;color:var(--ink-soft);padding:3px 0 3px 22px;position:relative}
   .ticket li::before{content:"★";color:var(--gold);position:absolute;left:0}
@@ -303,7 +303,7 @@
           <li>One-on-one with Coach K</li>
           <li>All ages & skill levels, 7 and over</li>
           <li>In person — Huntington Beach, CA</li>
-          <li>Take-home drills after every lesson</li>
+          <li>Take-home drills</li>
         </ul>
       </div>
       <div class="stub">LESSON TICKET</div>
