@@ -177,9 +177,10 @@
   footer{position:relative;overflow:hidden}
   footer .dog-footer{position:absolute;left:clamp(-6px,2vw,40px);bottom:4px;width:min(140px,22vw);opacity:.96;transform:rotate(2deg)}
   @media(min-width:1180px){footer .dog-footer{left:max(40px,calc((100vw - 1100px)/2 - 30px))}}
+  @media(max-width:620px){footer{padding-bottom:96px}footer .dog-footer{left:50%;transform:translateX(-50%) rotate(2deg);width:150px;bottom:10px}}
   @keyframes dogTrot{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(-3deg)}}
   @media (prefers-reduced-motion:reduce){.dog-hero{animation:none!important}}
-  @media(max-width:620px){.dog-seam,.dog-footer{display:none}}
+  @media(max-width:620px){.dog-seam{display:none}}
   @media(max-width:880px){.hero .dog-hero{position:static;display:block;width:min(220px,60vw);margin:24px auto 0;transform:rotate(-3deg);animation:none}}
 </style>
 </head>
