@@ -164,6 +164,22 @@
   footer .fine{font-size:12.5px;margin-top:18px;display:flex;justify-content:center;gap:22px;flex-wrap:wrap}
   footer a{color:rgba(244,232,210,.8)}
   footer a:hover{color:var(--gold)}
+
+  /* COACH K'S DACHSHUND MASCOT */
+  .dog{height:auto;pointer-events:none;-webkit-user-select:none;user-select:none}
+  /* Hero: dashes in below the buttons, facing the patch */
+  .hero .dog-hero{position:absolute;right:clamp(4px,2vw,30px);bottom:8px;width:min(210px,30vw);transform:rotate(-3deg);filter:drop-shadow(4px 6px 0 rgba(51,38,26,.14));animation:dogTrot 3.4s ease-in-out infinite}
+  /* Divider: trots along the stitched seam */
+  .dog-run-wrap{position:relative;max-width:1100px;margin:0 auto;height:0;z-index:5}
+  .dog-run-wrap .dog-seam{position:absolute;right:9%;bottom:-26px;width:min(132px,24vw);transform:rotate(3deg);filter:drop-shadow(3px 5px 0 rgba(51,38,26,.12))}
+  /* Footer: peeks in from the bottom-left corner */
+  footer{position:relative;overflow:hidden}
+  footer .dog-footer{position:absolute;left:clamp(-6px,2vw,40px);bottom:4px;width:min(140px,22vw);opacity:.96;transform:rotate(2deg)}
+  @media(min-width:1180px){footer .dog-footer{left:max(40px,calc((100vw - 1100px)/2 - 30px))}}
+  @keyframes dogTrot{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(-3deg)}}
+  @media (prefers-reduced-motion:reduce){.dog-hero{animation:none!important}}
+  @media(max-width:620px){.dog-seam,.dog-footer{display:none}}
+  @media(max-width:880px){.hero .dog-hero{position:static;display:block;width:min(220px,60vw);margin:24px auto 0;transform:rotate(-3deg);animation:none}}
 </style>
 </head>
 <body>
@@ -213,6 +229,7 @@
       <text x="228" y="156" font-size="16" fill="#D9A23F">★</text>
     </svg>
   </div>
+  <img class="dog dog-hero" src="images/coach-k-dog-right.png" alt="Coach K's dachshund mascot wearing a ballcap, running with a softball" loading="lazy" width="760" height="415">
 </section>
 
 <!-- SCOREBOARD -->
@@ -243,6 +260,7 @@
 </section>
 
 <hr class="stitch">
+<div class="dog-run-wrap" aria-hidden="true"><img class="dog dog-seam" src="images/coach-k-dog-right.png" alt="" loading="lazy" width="760" height="435"></div>
 
 <!-- GAME PLAN -->
 <section class="plan-sec" id="lessons">
@@ -393,6 +411,7 @@
 </section>
 
 <footer>
+  <img class="dog dog-footer" src="images/coach-k-dog.png" alt="" aria-hidden="true" loading="lazy" width="760" height="415">
   <div class="wrap">
     <span class="script">Pitch It To Me Straight</span>
     <p style="font-size:14px;margin-top:6px">Softball pitching lessons · Huntington Beach, CA · Teaching girls how to pitch since 2000</p>
