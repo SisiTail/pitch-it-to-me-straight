@@ -427,19 +427,35 @@
 
 <script>
 (function(){
+  var SRC = "sounds/woof.mp3";
+
+  // Preload the bark so the first click is instant.
+  var primer = new Audio(SRC);
+  primer.preload = "auto";
+  var fileOk = true;
+  primer.addEventListener("error", function(){ fileOk = false; });
+
+  // Play the real clip. Clone each time so overlapping clicks all bark.
+  function playClip(){
+    var a = primer.cloneNode();
+    a.currentTime = 0;
+    a.volume = 1;
+    var p = a.play();
+    if (p && typeof p.catch === "function") {
+      p.catch(function(){ /* autoplay blocked or load issue — fall back below */ synthBark(); });
+    }
+  }
+
+  // Fallback bark (only used if the mp3 can't load/play), so it's never silent.
   var AC = window.AudioContext || window.webkitAudioContext;
   var ctx = null;
-  function bark(){
+  function synthBark(){
     if(!AC) return;
     if(!ctx){ try{ ctx = new AC(); }catch(e){ return; } }
     if(ctx.state === "suspended"){ ctx.resume(); }
     var t = ctx.currentTime;
-    var osc = ctx.createOscillator();
-    var gain = ctx.createGain();
-    var filt = ctx.createBiquadFilter();
-    osc.type = "sawtooth";
-    filt.type = "lowpass";
-    // pitch contour: quick "wuh" up into "oof" then drop — dog-like
+    var osc = ctx.createOscillator(), gain = ctx.createGain(), filt = ctx.createBiquadFilter();
+    osc.type = "sawtooth"; filt.type = "lowpass";
     osc.frequency.setValueAtTime(250, t);
     osc.frequency.exponentialRampToValueAtTime(175, t + 0.05);
     osc.frequency.exponentialRampToValueAtTime(320, t + 0.12);
@@ -455,6 +471,9 @@
     osc.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
     osc.start(t); osc.stop(t + 0.32);
   }
+
+  function bark(){ if(fileOk){ playClip(); } else { synthBark(); } }
+
   function bounce(el){
     if(el.animate){
       var cs = getComputedStyle(el).transform;
@@ -467,7 +486,9 @@
       );
     }
   }
+
   function woof(el){ bark(); bounce(el); }
+
   document.querySelectorAll(".dog").forEach(function(el){
     el.addEventListener("click", function(){ woof(el); });
     el.addEventListener("keydown", function(e){
