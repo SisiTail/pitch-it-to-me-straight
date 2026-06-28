@@ -166,7 +166,8 @@
   footer a:hover{color:var(--gold)}
 
   /* COACH K'S DACHSHUND MASCOT */
-  .dog{height:auto;pointer-events:none;-webkit-user-select:none;user-select:none}
+  .dog{height:auto;-webkit-user-select:none;user-select:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .dog:focus-visible{outline:3px solid var(--gold);outline-offset:4px;border-radius:6px}
   /* Hero: dashes in below the buttons, facing the patch */
   .hero .dog-hero{position:absolute;right:clamp(4px,2vw,30px);bottom:8px;width:min(210px,30vw);transform:rotate(-3deg);filter:drop-shadow(4px 6px 0 rgba(51,38,26,.14));animation:dogTrot 3.4s ease-in-out infinite}
   /* Divider: trots along the stitched seam */
@@ -229,7 +230,7 @@
       <text x="228" y="156" font-size="16" fill="#D9A23F">★</text>
     </svg>
   </div>
-  <img class="dog dog-hero" src="images/coach-k-dog-right.png" alt="Coach K's dachshund mascot wearing a ballcap, running with a softball" loading="lazy" width="760" height="415">
+  <img class="dog dog-hero" src="images/coach-k-dog-right.png" alt="Coach K's dachshund mascot wearing a ballcap, running with a softball" title="Woof!" role="button" tabindex="0" aria-label="Coach K's dachshund — tap to woof" loading="lazy" width="780" height="396">
 </section>
 
 <!-- SCOREBOARD -->
@@ -260,7 +261,7 @@
 </section>
 
 <hr class="stitch">
-<div class="dog-run-wrap" aria-hidden="true"><img class="dog dog-seam" src="images/coach-k-dog-right.png" alt="" loading="lazy" width="760" height="435"></div>
+<div class="dog-run-wrap"><img class="dog dog-seam" src="images/coach-k-dog-right.png" alt="" title="Woof!" role="button" tabindex="0" aria-label="Mascot dog — tap to woof" loading="lazy" width="780" height="396"></div>
 
 <!-- GAME PLAN -->
 <section class="plan-sec" id="lessons">
@@ -411,7 +412,7 @@
 </section>
 
 <footer>
-  <img class="dog dog-footer" src="images/coach-k-dog.png" alt="" aria-hidden="true" loading="lazy" width="760" height="415">
+  <img class="dog dog-footer" src="images/coach-k-dog.png" alt="" title="Woof!" role="button" tabindex="0" aria-label="Mascot dog — tap to woof" loading="lazy" width="780" height="427">
   <div class="wrap">
     <span class="script">Pitch It To Me Straight</span>
     <p style="font-size:14px;margin-top:6px">Softball pitching lessons · Huntington Beach, CA · Teaching girls how to pitch since 2000</p>
@@ -424,5 +425,56 @@
 </footer>
 
 
+<script>
+(function(){
+  var AC = window.AudioContext || window.webkitAudioContext;
+  var ctx = null;
+  function bark(){
+    if(!AC) return;
+    if(!ctx){ try{ ctx = new AC(); }catch(e){ return; } }
+    if(ctx.state === "suspended"){ ctx.resume(); }
+    var t = ctx.currentTime;
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    var filt = ctx.createBiquadFilter();
+    osc.type = "sawtooth";
+    filt.type = "lowpass";
+    // pitch contour: quick "wuh" up into "oof" then drop — dog-like
+    osc.frequency.setValueAtTime(250, t);
+    osc.frequency.exponentialRampToValueAtTime(175, t + 0.05);
+    osc.frequency.exponentialRampToValueAtTime(320, t + 0.12);
+    osc.frequency.exponentialRampToValueAtTime(150, t + 0.27);
+    filt.frequency.setValueAtTime(950, t);
+    filt.frequency.exponentialRampToValueAtTime(1700, t + 0.10);
+    filt.frequency.exponentialRampToValueAtTime(720, t + 0.27);
+    filt.Q.value = 6;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.45, t + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.25, t + 0.13);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.30);
+    osc.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
+    osc.start(t); osc.stop(t + 0.32);
+  }
+  function bounce(el){
+    if(el.animate){
+      var cs = getComputedStyle(el).transform;
+      var base = (cs && cs !== "none") ? cs + " " : "";
+      el.animate(
+        [{transform: base + "translateY(0)"},
+         {transform: base + "translateY(-11px)"},
+         {transform: base + "translateY(0)"}],
+        {duration: 300, easing: "ease-out"}
+      );
+    }
+  }
+  function woof(el){ bark(); bounce(el); }
+  document.querySelectorAll(".dog").forEach(function(el){
+    el.addEventListener("click", function(){ woof(el); });
+    el.addEventListener("keydown", function(e){
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); woof(el); }
+    });
+  });
+})();
+</script>
 </body>
 </html>
