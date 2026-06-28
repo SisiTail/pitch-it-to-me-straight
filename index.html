@@ -55,14 +55,14 @@
   /* NAV + BUNTING */
   header{position:sticky;top:0;z-index:50;background:var(--navy)}
   .nav{display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
-  .logo em{font-family:var(--script);font-size:22px;color:var(--gold);font-style:normal;margin-right:8px}
   nav.links{display:flex;gap:24px;align-items:center}
   nav.links a{color:var(--cream);text-decoration:none;font-size:14.5px;font-weight:600;opacity:.9}
   nav.links a:hover{color:var(--gold);opacity:1}
-  .logo{font-family:var(--disp);font-size:17px;color:var(--cream);text-decoration:none;letter-spacing:.03em;white-space:nowrap;display:flex;align-items:baseline}
+  .logo{font-family:var(--disp);font-size:17px;color:var(--cream);text-decoration:none;letter-spacing:.03em;white-space:nowrap;line-height:1.1}
   .nav .btn{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.02em;padding:9px 18px;box-shadow:none;border-color:var(--gold);background:var(--red);white-space:nowrap;flex:none}
   @media(max-width:840px){nav.links a:not(.btn){display:none}}
-  @media(max-width:560px){.logo-full{display:none}.logo em{margin-right:0}.nav .btn{font-size:13px;padding:8px 14px}}
+  @media(max-width:560px){.logo{font-size:15px}.nav .btn{font-size:13px;padding:8px 13px}}
+  @media(max-width:380px){.logo{font-size:13.5px}.nav .btn{font-size:12px;padding:7px 11px}}
   .bunting{display:flex;justify-content:center;background:var(--navy);overflow:hidden}
   .bunting span{width:34px;height:22px;clip-path:polygon(0 0,100% 0,50% 100%);flex:none}
   .bunting span:nth-child(3n+1){background:var(--red)}
@@ -173,7 +173,7 @@
 
 <header>
   <div class="wrap nav">
-    <a class="logo" href="#top"><em>Coach K</em> <span class="logo-full">Pitch It To Me Straight</span></a>
+    <a class="logo" href="#top">Pitch It To Me Straight</a>
     <nav class="links" aria-label="Main">
       <a href="#about">Meet Coach K</a>
       <a href="#pricing">Lessons</a>
@@ -410,12 +410,4 @@
     <p style="font-size:14px;margin-top:6px">Softball pitching lessons · Huntington Beach, CA · Teaching girls how to pitch since 2000</p>
     <div class="fine">
       <span>© 2026 Pitch It To Me Straight</span>
-      <a href="https://www.instagram.com/kpitchingcoach" target="_blank" rel="noopener">@kpitchingcoach</a>
-      <a href="#contact">Contact</a>
-    </div>
-  </div>
-</footer>
-
-
-</body>
-</html>
+      <a href="https://www.instagram.com/kpitchingcoach" ta
