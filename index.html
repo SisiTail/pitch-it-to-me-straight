@@ -110,7 +110,7 @@
   .ticket{max-width:560px;margin:36px auto 0;background:var(--cream);border:2px solid var(--ink);border-radius:14px;display:grid;grid-template-columns:1fr auto;overflow:hidden;box-shadow:6px 6px 0 rgba(51,38,26,.18);text-align:left;position:relative}
   .ticket::before{content:"";position:absolute;top:0;bottom:0;right:138px;border-left:3px dashed var(--ink);opacity:.5}
   .ticket .main{padding:30px 32px}
-  .ticket .admit{font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--red)}
+  .ticket .admit{font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--red);text-align:center;margin-bottom:14px}
   .ticket .price{font-family:var(--disp);font-size:60px;color:var(--ink);line-height:1}
   .ticket .price small{display:block;font-size:20px;color:var(--ink-soft);margin-top:2px;line-height:1.2}
   .ticket ul{list-style:none;margin-top:12px}
@@ -191,7 +191,7 @@
     <a class="logo" href="#top">Pitch It To Me Straight</a>
     <nav class="links" aria-label="Main">
       <a href="#about">Meet Coach K</a>
-      <a href="#pricing">Lessons</a>
+      <a href="#lessons">Lessons</a>
       <a href="#fans">Testimonials</a>
       <a href="#contact">Contact</a>
       <a class="btn" href="#book">Request a Lesson</a>
@@ -210,7 +210,7 @@
       <p class="lede">Private fastpitch pitching lessons with <strong>Kiley "Coach K" Majeski</strong> — from a young pitcher's very first windmill to fine-tuning college pitchers at every level. <strong>$50 per 30-minute lesson.</strong> Request your time online and Coach K confirms it personally.</p>
       <a class="btn" href="#book">Request a Lesson</a>
     </div>
-    <svg class="patch" viewBox="0 0 300 300" role="img" aria-label="Pitch It To Me Straight team patch, Huntington Beach, est. 2000">
+    <svg class="patch" viewBox="0 0 300 300" role="img" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Pitch It To Me Straight team patch, Huntington Beach, est. 2000">
       <circle cx="150" cy="150" r="146" fill="#B0402E" stroke="#33261A" stroke-width="5"/>
       <circle cx="150" cy="150" r="124" fill="#F4E8D2" stroke="#D9A23F" stroke-width="4"/>
       <defs>
@@ -218,10 +218,10 @@
         <path id="arcBot" d="M 150,150 m -100,0 a 100,100 0 1,0 200,0"/>
       </defs>
       <text font-family="Alfa Slab One" font-size="16.5" fill="#243B53" letter-spacing="0.5">
-        <textPath href="#arcTop" startOffset="50%" text-anchor="middle">PITCH IT TO ME STRAIGHT</textPath>
+        <textPath href="#arcTop" xlink:href="#arcTop" startOffset="50%" text-anchor="middle">PITCH IT TO ME STRAIGHT</textPath>
       </text>
       <text font-family="Libre Franklin" font-weight="700" font-size="12.5" fill="#8E3021" letter-spacing="2">
-        <textPath href="#arcBot" startOffset="50%" text-anchor="middle">HUNTINGTON BEACH ★ EST. 2000</textPath>
+        <textPath href="#arcBot" xlink:href="#arcBot" startOffset="50%" text-anchor="middle">HUNTINGTON BEACH ★ EST. 2000</textPath>
       </text>
       <circle cx="150" cy="150" r="62" fill="#F4E8D2" stroke="#33261A" stroke-width="3.5"/>
       <path d="M 122 100 C 144 130, 144 170, 122 200" fill="none" stroke="#B0402E" stroke-width="3.5" stroke-dasharray="7 6" stroke-linecap="round"/>
@@ -247,7 +247,7 @@
 <section class="about" id="about">
   <div class="wrap">
     <figure class="photo-frame">
-      <div class="ph" style="padding:0;border:none;background:none;overflow:hidden"><img src="images/kiley.jpg" alt="Kiley Majeski, pitching coach" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      <div class="ph" style="padding:0;border:none;background:none;overflow:hidden"><img src="images/kiley.jpg" alt="Kiley Majeski, pitching coach" loading="lazy" width="732" height="589" style="width:100%;height:100%;object-fit:cover;display:block"></div>
       <figcaption>Coach K, in the circle since 2000</figcaption>
     </figure>
     <div>
