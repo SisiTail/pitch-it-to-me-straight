@@ -109,10 +109,11 @@
   .howto-txt{font-size:13px; line-height:1.4;}
   .howto-txt b{color:var(--gold);}
   .backlink{position:absolute; bottom:12px; left:0; right:0; text-align:center; font-size:11px; letter-spacing:.08em; text-transform:uppercase;}
-  .backlink a{color:var(--cream); opacity:.6; text-decoration:none;}
+  .backlink a{color:var(--cream); opacity:.75; text-decoration:none; text-shadow:0 1px 3px rgba(51,38,26,.85);}
   .backlink a:hover{opacity:1;}
-  .touch-hints{position:absolute; left:0; right:0; bottom:38px; display:none; justify-content:center; flex-wrap:wrap; gap:6px 16px; pointer-events:none; font-size:11px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--cream); opacity:.6; text-shadow:0 1px 0 rgba(0,0,0,.45);}
-  .touch-hints b{color:var(--gold); font-weight:800;}
+  .touch-hints{position:absolute; left:0; right:0; bottom:42px; display:none; justify-content:center; flex-wrap:wrap; gap:8px 10px; pointer-events:none; font-size:13px; font-weight:800; letter-spacing:.05em; text-transform:uppercase;}
+  .touch-hints span{background:rgba(244,232,210,.92); color:var(--ink); border:2px solid var(--ink); border-radius:999px; padding:5px 13px; box-shadow:0 2px 0 rgba(51,38,26,.35);}
+  .touch-hints b{color:var(--navy); font-weight:800;}
   @media (pointer:coarse){ .touch-hints{display:flex;} }
   @media (prefers-reduced-motion: reduce){.card,.newbest,#banner.show{animation:none;} #banner.show{opacity:1;}}
 </style>
