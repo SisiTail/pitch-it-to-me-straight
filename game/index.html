@@ -394,6 +394,8 @@
     scoreF=0; bonesGot=0; shake=0; gameTime=0; lastInn=1; trackScroll=0;
     magnetT=0; goldT=0; shield=false; invulnT=0;
     scoreEl.textContent='0'; chipsEl.innerHTML='';
+    bannerEl.classList.remove('show'); bannerEl.textContent='';
+    if(bannerT){ clearTimeout(bannerT); bannerT=null; }
   }
   function showHowto(){ onHowto=true; menu.classList.add('hidden'); howto.classList.remove('hidden'); }
   function startGame(){ ensureAudio(); reset(); state=S.PLAY; onHowto=false; menu.classList.add('hidden'); howto.classList.add('hidden'); gameover.classList.add('hidden'); pausedCard.classList.add('hidden'); startMusic(true); }
@@ -613,7 +615,15 @@
   function sparkle(x,y,gold){ const c=gold?'rgba(217,162,63,':'rgba(244,232,210,'; for(let i=0;i<9;i++){const a=Math.random()*6.28; particles.push({x,y,vx:Math.cos(a)*95,vy:Math.sin(a)*95,life:0.45,max:0.45,r:2+Math.random()*3,c});} }
   function burst(x,y){ for(let i=0;i<14;i++){const a=Math.random()*6.28; particles.push({x,y,vx:Math.cos(a)*160,vy:Math.sin(a)*160-40,life:0.6,max:0.6,r:3+Math.random()*4,c:'rgba(176,64,46,'});} }
   function popup(x,y,txt,gold){ popups.push({x,y,txt,life:0.85,max:0.85,gold:!!gold}); }
-  function showBanner(txt){ bannerEl.textContent=txt; bannerEl.classList.remove('show'); void bannerEl.offsetWidth; bannerEl.classList.add('show'); }
+  let bannerT=null;
+  function showBanner(txt){
+    bannerEl.textContent=txt;
+    bannerEl.classList.remove('show');
+    void bannerEl.offsetWidth;
+    bannerEl.classList.add('show');
+    if(bannerT) clearTimeout(bannerT);
+    bannerT=setTimeout(()=>{ bannerEl.classList.remove('show'); bannerEl.textContent=''; bannerT=null; },1600);
+  }
 
   // ---------- Update ----------
   function mult(){ return goldT>0?2:1; }
