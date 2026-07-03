@@ -93,6 +93,17 @@
   .btn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--red-dark);}
   .hint{font-size:12px; opacity:.85; letter-spacing:.02em; line-height:1.6;}
   .hint b{color:var(--gold);}
+  #lbWrap{width:min(300px,88%); display:flex; flex-direction:column; gap:8px; align-items:center;}
+  #lbForm{display:flex; gap:8px; width:100%;}
+  #lbName{flex:1; min-width:0; font-family:var(--body); font-weight:700; font-size:15px; padding:10px 12px; border-radius:8px; border:2px solid var(--ink); background:var(--cream); color:var(--ink); pointer-events:auto;}
+  #lbName:focus{outline:3px solid var(--gold);}
+  .btn-small{font-size:15px; padding:10px 16px; border-radius:8px;}
+  .btn:disabled{opacity:.55; box-shadow:none; transform:translateY(2px); cursor:default;}
+  #lbList{list-style:none; margin:2px 0 0; padding:0; width:100%; max-height:148px; overflow-y:auto; font-size:13px; font-weight:700;}
+  #lbList li{display:flex; justify-content:space-between; gap:10px; padding:3px 8px; border-radius:6px;}
+  #lbList li:first-child{color:var(--gold); font-size:15px;}
+  #lbList li.me{background:rgba(217,162,63,.25); outline:1px solid var(--gold);}
+  #lbList .lbn{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:left;}
   .howto-row{display:flex; align-items:center; gap:12px; text-align:left; width:min(320px,86%);}
   .howto-ic{flex:0 0 48px; height:48px; display:grid; place-items:center;}
   .howto-txt{font-size:13px; line-height:1.4;}
@@ -188,6 +199,15 @@
     <div class="final-label">final score</div>
     <div class="newbest hidden" id="newBest">★ New Best ★</div>
     <p class="subtitle" id="goSub"></p>
+    <div id="lbWrap">
+      <div class="kicker">Top Dogs</div>
+      <div id="lbForm">
+        <input id="lbName" maxlength="12" placeholder="Your name" autocomplete="off" spellcheck="false">
+        <button class="btn btn-small" id="lbSubmit">Post</button>
+      </div>
+      <div id="lbStatus" class="hint"></div>
+      <ol id="lbList"></ol>
+    </div>
     <button class="btn" id="againBtn">Run It Back</button>
     <div class="hint">Best this device: <b id="bestGO">0</b></div>
   </div>
@@ -222,6 +242,12 @@
   const newBestEl=document.getElementById('newBest');
   const goSub=document.getElementById('goSub');
   const muteBtn=document.getElementById('muteBtn');
+  const lbName=document.getElementById('lbName');
+  const lbSubmit=document.getElementById('lbSubmit');
+  const lbStatus=document.getElementById('lbStatus');
+  const lbList=document.getElementById('lbList');
+  const NAME_KEY='sisisRunName';
+  let lbSubmitted=false, pendingScore=0;
 
   const BEST_KEY='sisisRunBest', MUTE_KEY='sisisRunMuted';
   let best=parseInt(localStorage.getItem(BEST_KEY)||'0',10)||0;
@@ -406,14 +432,73 @@
     if(isBest){best=sc; localStorage.setItem(BEST_KEY,String(best));}
     bestHudEl.textContent=best; bestGOEl.textContent=best;
     newBestEl.classList.toggle('hidden',!isBest);
-    submitScore(sc);
+    // global leaderboard: prep the form and pull current standings
+    pendingScore=sc; lbSubmitted=false;
+    lbSubmit.disabled=false;
+    lbName.value=localStorage.getItem(NAME_KEY)||'';
+    lbStatus.textContent='';
+    renderBoard(null);
+    loadBoard();
     setTimeout(()=>gameover.classList.remove('hidden'),350);
   }
-  // Phase-2 global leaderboard hook (Cloudflare Worker + KV). No-op for now.
-  function submitScore(finalScore){
-    /* fetch('/api/score',{method:'POST',headers:{'Content-Type':'application/json'},
-         body:JSON.stringify({score:finalScore})}).catch(()=>{}); */
-    return finalScore;
+
+  // ---------- Global leaderboard (Cloudflare Pages Function + KV) ----------
+  function renderBoard(list, mineIdx){
+    lbList.innerHTML='';
+    if(list===null){
+      const li=document.createElement('li');
+      li.textContent='Loading standings…'; li.style.justifyContent='center';
+      lbList.appendChild(li); return;
+    }
+    const top=list.slice(0,10);
+    if(!top.length){
+      const li=document.createElement('li');
+      li.textContent='No scores yet — be the first!'; li.style.justifyContent='center';
+      lbList.appendChild(li); return;
+    }
+    top.forEach((e,i)=>{
+      const li=document.createElement('li');
+      if(i===mineIdx) li.className='me';
+      const rk=document.createElement('span'); rk.textContent=(i+1)+'.';
+      const nm=document.createElement('span'); nm.className='lbn'; nm.textContent=e.name;
+      const scv=document.createElement('span'); scv.textContent=e.score;
+      li.append(rk,nm,scv);
+      lbList.appendChild(li);
+    });
+  }
+  async function loadBoard(){
+    try{
+      const r=await fetch('/api/score');
+      const d=await r.json();
+      renderBoard(Array.isArray(d)?d:(d.list||[]), -1);
+    }catch(e){
+      renderBoard([]);
+      lbStatus.textContent='Leaderboard works on the live site.';
+    }
+  }
+  async function postScore(){
+    if(lbSubmitted) return;
+    const name=lbName.value.replace(/[^\w \-\.]/g,'').trim().slice(0,12);
+    if(!name){ lbStatus.textContent='Enter a name first!'; lbName.focus(); return; }
+    lbSubmitted=true; lbSubmit.disabled=true; lbStatus.textContent='Sending…';
+    try{
+      const r=await fetch('/api/score',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name, score:pendingScore})
+      });
+      const d=await r.json();
+      if(!r.ok) throw new Error(d&&d.error||'failed');
+      localStorage.setItem(NAME_KEY,name);
+      const idx=(d.rank||0)-1;
+      renderBoard(d.list||[], (idx>=0&&idx<10)?idx:-1);
+      lbStatus.textContent = d.rank
+        ? (d.rank===1 ? 'Top Dog! You\'re #1!' : 'You\'re #'+d.rank+' of '+ (d.list?d.list.length:25) +'!')
+        : 'Posted — keep training to crack the Top 25!';
+    }catch(e){
+      lbSubmitted=false; lbSubmit.disabled=false;
+      lbStatus.textContent='Couldn\'t reach the leaderboard — try again.';
+    }
   }
 
   // ---------- Input ----------
@@ -442,6 +527,7 @@
   }
 
   window.addEventListener('keydown',(e)=>{
+    if(e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
     if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
     if(e.repeat)return;
     if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A') switchLane(-1);
@@ -469,8 +555,8 @@
   },{passive:true});
   stage.addEventListener('touchend',(e)=>{
     if(gestureDone)return;
-    if(e.target.closest('.btn,.icon-btn,.backlink'))return;
-    if(state!==S.PLAY){ primary(); return; }
+    if(e.target.closest('.btn,.icon-btn,.backlink,#lbWrap,input'))return;
+    if(state!==S.PLAY){ if(state!==S.OVER) primary(); return; }
     jumpInput();
   },{passive:true});
   stage.addEventListener('mousedown',(e)=>{
@@ -482,6 +568,8 @@
   document.getElementById('howtoBtn').addEventListener('click',startGame);
   document.getElementById('againBtn').addEventListener('click',startGame);
   document.getElementById('resumeBtn').addEventListener('click',resumeGame);
+  lbSubmit.addEventListener('click',postScore);
+  lbName.addEventListener('keydown',(e)=>{ if(e.key==='Enter') postScore(); });
   document.addEventListener('visibilitychange',()=>{ if(document.hidden) pauseGame(); });
   window.addEventListener('blur',()=>pauseGame());
 
