@@ -80,7 +80,7 @@
   @keyframes fade{from{opacity:0}to{opacity:1}}
   .card.hidden{display:none;}
   .menuDog{width:min(250px,64%); filter:drop-shadow(0 6px 0 rgba(0,0,0,.3));}
-  .patch{width:96px; height:96px; filter:drop-shadow(0 5px 0 rgba(0,0,0,.35));}
+  .goDog{width:min(210px,58%); filter:drop-shadow(0 5px 0 rgba(0,0,0,.32));}
   .kicker{font-weight:800; text-transform:uppercase; letter-spacing:.22em; font-size:12px; color:var(--gold);}
   h1{font-family:var(--display); font-weight:400; margin:0; font-size:clamp(32px,10vw,50px); line-height:.98; color:var(--cream); text-shadow:0 4px 0 var(--red-dark), 0 6px 12px rgba(0,0,0,.4);}
   h2{font-family:var(--display); font-weight:400; margin:0; font-size:26px; color:var(--cream); text-shadow:0 3px 0 var(--red-dark);}
@@ -139,7 +139,7 @@
     <img class="menuDog" id="menuDogImg" src="../images/coach-k-dog-right.png" alt="Sisi, running with a softball">
     <div class="kicker">Pitch It To Me Straight</div>
     <h1>Sisi's&nbsp;Run</h1>
-    <p class="subtitle">Sisi's off the leash on the base paths. Dodge the walls, snag the bones, don't get tagged out.</p>
+    <p class="subtitle">Sisi is now off the leash and she is hungry. Dodge the walls and snag those bones!</p>
     <button class="btn" id="startBtn">Play Ball</button>
     <div class="hint">Quick how-to comes first — one tap and you're in.</div>
   </div>
@@ -174,26 +174,7 @@
 
   <!-- GAME OVER -->
   <div class="card hidden" id="gameover">
-    <svg class="patch" viewBox="0 0 300 300" aria-hidden="true">
-      <circle cx="150" cy="150" r="146" fill="#B0402E" stroke="#33261A" stroke-width="6"/>
-      <circle cx="150" cy="150" r="122" fill="#F4E8D2" stroke="#D9A23F" stroke-width="5"/>
-      <defs>
-        <path id="arcTop" d="M 150,150 m -98,0 a 98,98 0 1,1 196,0"/>
-        <path id="arcBot" d="M 150,150 m -98,0 a 98,98 0 1,0 196,0"/>
-      </defs>
-      <text font-family="Alfa Slab One, serif" font-size="30" fill="#243B53" letter-spacing="1">
-        <textPath href="#arcTop" startOffset="50%" text-anchor="middle">SISI'S RUN</textPath>
-      </text>
-      <text font-family="Libre Franklin, sans-serif" font-weight="700" font-size="15" fill="#8E3021" letter-spacing="3">
-        <textPath href="#arcBot" startOffset="50%" text-anchor="middle">COACH K'S SECRET GAME</textPath>
-      </text>
-      <g stroke="#33261A" stroke-width="4" fill="#243B53">
-        <rect x="118" y="142" width="64" height="14" rx="7"/>
-        <circle cx="118" cy="142" r="11"/><circle cx="118" cy="156" r="11"/>
-        <circle cx="182" cy="142" r="11"/><circle cx="182" cy="156" r="11"/>
-      </g>
-      <text x="150" y="128" text-anchor="middle" font-family="Alfa Slab One, serif" font-size="34" fill="#B0402E">SISI</text>
-    </svg>
+    <img class="goDog" src="../images/coach-k-dog-right.png" alt="Sisi with her softball">
     <div class="kicker">You're out!</div>
     <div class="final-score" id="finalScore">0</div>
     <div class="final-label">final score</div>
@@ -427,7 +408,8 @@
     const sc=Math.floor(scoreF);
     finalEl.textContent=sc;
     const inn=Math.min(10,Math.floor(gameTime/20)+1);
-    goSub.textContent=(inn>=10?'Extra innings':'Tagged out in the '+ordinal(inn)+' inning')+' · '+bonesGot+' bones';
+    const ran=Math.floor(gameTime/60)+':'+String(Math.floor(gameTime%60)).padStart(2,'0');
+    goSub.textContent='Sisi ran '+ran+' and snagged '+bonesGot+(bonesGot===1?' bone':' bones')+' — '+(inn>=10?'made it to extra innings!':'tagged out in the '+ordinal(inn)+' inning.');
     const isBest=sc>best;
     if(isBest){best=sc; localStorage.setItem(BEST_KEY,String(best));}
     bestHudEl.textContent=best; bestGOEl.textContent=best;
