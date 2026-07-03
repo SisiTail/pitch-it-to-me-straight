@@ -115,6 +115,7 @@
   .touch-hints span{background:rgba(244,232,210,.92); color:var(--ink); border:2px solid var(--ink); border-radius:999px; padding:5px 13px; box-shadow:0 2px 0 rgba(51,38,26,.35);}
   .touch-hints b{color:var(--navy); font-weight:800;}
   @media (pointer:coarse){ .touch-hints{display:flex;} }
+  .touch-hints.hide{display:none;}
   @media (prefers-reduced-motion: reduce){.card,.newbest,#banner.show{animation:none;} #banner.show{opacity:1;}}
 </style>
 </head>
@@ -201,7 +202,7 @@
     <div class="hint">Best this device: <b id="bestGO">0</b></div>
   </div>
 
-  <div class="touch-hints" aria-hidden="true">
+  <div class="touch-hints hide" id="touchHints" aria-hidden="true">
     <span><b>◂ ▸</b> swipe = lanes</span>
     <span><b>tap</b> = jump</span>
     <span><b>blue sign</b> = stay low</span>
@@ -236,6 +237,7 @@
   const newBestEl=document.getElementById('newBest');
   const goSub=document.getElementById('goSub');
   const muteBtn=document.getElementById('muteBtn');
+  const touchHints=document.getElementById('touchHints');
   const lbName=document.getElementById('lbName');
   const lbSubmit=document.getElementById('lbSubmit');
   const lbStatus=document.getElementById('lbStatus');
@@ -411,14 +413,15 @@
     if(bannerT){ clearTimeout(bannerT); bannerT=null; }
   }
   function showHowto(){ onHowto=true; menu.classList.add('hidden'); howto.classList.remove('hidden'); }
-  function startGame(){ ensureAudio(); reset(); state=S.PLAY; onHowto=false; menu.classList.add('hidden'); howto.classList.add('hidden'); gameover.classList.add('hidden'); pausedCard.classList.add('hidden'); startMusic(true); }
-  function pauseGame(){ if(state!==S.PLAY)return; state=S.PAUSE; pausedCard.classList.remove('hidden'); stopMusic(); }
-  function resumeGame(){ if(state!==S.PAUSE)return; state=S.PLAY; pausedCard.classList.add('hidden'); startMusic(false); }
+  function startGame(){ ensureAudio(); reset(); state=S.PLAY; onHowto=false; menu.classList.add('hidden'); howto.classList.add('hidden'); gameover.classList.add('hidden'); pausedCard.classList.add('hidden'); touchHints.classList.remove('hide'); startMusic(true); }
+  function pauseGame(){ if(state!==S.PLAY)return; state=S.PAUSE; pausedCard.classList.remove('hidden'); touchHints.classList.add('hide'); stopMusic(); }
+  function resumeGame(){ if(state!==S.PAUSE)return; state=S.PLAY; pausedCard.classList.add('hidden'); touchHints.classList.remove('hide'); startMusic(false); }
   function ordinal(n){ return n===1?'1st':n===2?'2nd':n===3?'3rd':n+'th'; }
 
   function endGame(){
     state=S.OVER; overAt=performance.now();
     stopMusic();
+    touchHints.classList.add('hide');
     sndCrash(); shake=16;
     const sc=Math.floor(scoreF);
     finalEl.textContent=sc;
