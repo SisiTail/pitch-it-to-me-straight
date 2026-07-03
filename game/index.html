@@ -573,11 +573,11 @@
     }
     // Overhead STAY LOW sign — do NOT jump; run under it.
     // Guard: never right after a jump-forcing wave, so ducking is always possible.
-    if(t>30 && overCd<=0 && t-lastLowT>0.85 && Math.random()<0.18){
+    if(t>25 && overCd<=0 && t-lastLowT>0.85 && Math.random()<0.30){
       const full=Math.random()<0.35;
       const laneIdx=Math.floor(Math.random()*3);
       obstacles.push({type:'over', z:1, lanes: full?[0,1,2]:[laneIdx], lane: full?1:laneIdx, cc:false});
-      overCd=2.2;
+      overCd=1.5;
       return;
     }
     // Full line of low walls across all three lanes — jumping is the only option
@@ -1039,13 +1039,6 @@
       // banner panel with open air below it
       ctx.fillStyle='#243B53'; roundRect(-half-10,-192,half*2+20,46,6); ctx.fill(); ctx.stroke();
       ctx.fillStyle='#D9A23F'; ctx.fillRect(-half-10,-192,half*2+20,7);
-      // bunting flags along the bottom edge
-      ctx.fillStyle='#F4E8D2'; ctx.lineWidth=2;
-      for(let bx=-half+4; bx<half-16; bx+=24){
-        ctx.beginPath(); ctx.moveTo(bx,-146); ctx.lineTo(bx+18,-146); ctx.lineTo(bx+9,-132); ctx.closePath();
-        ctx.fill(); ctx.stroke();
-      }
-      ctx.lineWidth=3;
       ctx.fillStyle='#F4E8D2';
       ctx.font='400 '+(o.lanes.length===3?26:15)+'px "Alfa Slab One",serif';
       ctx.textAlign='center';
