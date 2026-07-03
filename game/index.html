@@ -160,6 +160,10 @@
       <div class="howto-txt"><b>Tall OUT walls can't be jumped</b> — switch lanes! (Show-off move: a double-jump clears them.)</div>
     </div>
     <div class="howto-row">
+      <svg class="howto-ic" viewBox="0 0 48 48"><rect x="7" y="6" width="4" height="36" fill="#8E3021" stroke="#33261A" stroke-width="2"/><rect x="37" y="6" width="4" height="36" fill="#8E3021" stroke="#33261A" stroke-width="2"/><rect x="5" y="5" width="38" height="13" rx="2" fill="#243B53" stroke="#33261A" stroke-width="2.5"/><path d="M12 42h24" stroke="#F4E8D2" stroke-width="3" stroke-linecap="round"/><path d="M24 24v6" stroke="#D9A23F" stroke-width="4" stroke-linecap="round"/><path d="M18 28l6 6 6-6" fill="none" stroke="#D9A23F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="howto-txt"><b>STAY LOW signs</b> hang overhead — do <b>not</b> jump. Stay on the ground and run under them.</div>
+    </div>
+    <div class="howto-row">
       <svg class="howto-ic" viewBox="0 0 48 48"><g transform="rotate(25 24 24)"><rect x="14" y="21" width="20" height="6" rx="3" fill="#F4E8D2" stroke="#33261A" stroke-width="2"/><circle cx="14" cy="20" r="5" fill="#F4E8D2" stroke="#33261A" stroke-width="2"/><circle cx="14" cy="28" r="5" fill="#F4E8D2" stroke="#33261A" stroke-width="2"/><circle cx="34" cy="20" r="5" fill="#F4E8D2" stroke="#33261A" stroke-width="2"/><circle cx="34" cy="28" r="5" fill="#F4E8D2" stroke="#33261A" stroke-width="2"/></g></svg>
       <div class="howto-txt"><b>Bones = +25.</b> Grab the 🧲 Bone Magnet, ×2 Golden Softball, and Batting Helmet (one free hit).</div>
     </div>
@@ -270,7 +274,7 @@
 
   const DOG_H=137;
   const JUMP_V=780, JUMP2_V=640, GRAV=2450, SLAM_V=1500;
-  const TALL_CLEAR=150, LOW_CLEAR=40;
+  const TALL_CLEAR=150, LOW_CLEAR=40, OVER_HIT=60;
   const COLLIDE_Z=0.05;
 
   // ---------- Audio ----------
@@ -380,7 +384,7 @@
   const S={MENU:0,PLAY:1,PAUSE:2,OVER:3};
   let state=S.MENU, overAt=0, onHowto=false;
   let dog, obstacles, bones, powerups, particles, popups, clouds, scenery, gulls;
-  let speed, obstT, boneT, powT, tallCd, scoreF, bonesGot, shake, gameTime, lastInn, trackScroll, sceneT;
+  let speed, obstT, boneT, powT, tallCd, overCd, lastLowT, scoreF, bonesGot, shake, gameTime, lastInn, trackScroll, sceneT;
   let magnetT, goldT, shield, invulnT;
 
   function reset(){
@@ -390,7 +394,7 @@
     clouds=[]; for(let i=0;i<4;i++) clouds.push({x:Math.random()*VW, y:24+Math.random()*140, w:50+Math.random()*60, sp:5+Math.random()*7});
     gulls=[]; for(let i=0;i<2;i++) gulls.push({x:Math.random()*VW, y:40+Math.random()*110, sp:14+Math.random()*10, f:Math.random()*6.28});
     scenery=[]; sceneT=0.3;
-    speed=265; obstT=1.1; boneT=0.6; powT=9; tallCd=0;
+    speed=265; obstT=1.1; boneT=0.6; powT=9; tallCd=0; overCd=0; lastLowT=-9;
     scoreF=0; bonesGot=0; shake=0; gameTime=0; lastInn=1; trackScroll=0;
     magnetT=0; goldT=0; shield=false; invulnT=0;
     scoreEl.textContent='0'; chipsEl.innerHTML='';
@@ -564,12 +568,22 @@
     if(t>45 && tallCd<=0 && r<0.08){
       const tallLane=Math.floor(Math.random()*3);
       for(let l=0;l<3;l++) obstacles.push({lane:l, z:1, type:l===tallLane?'tall':'low', cc:false});
-      tallCd=4.5;
+      tallCd=4.5; lastLowT=t;
+      return;
+    }
+    // Overhead STAY LOW sign — do NOT jump; run under it.
+    // Guard: never right after a jump-forcing wave, so ducking is always possible.
+    if(t>30 && overCd<=0 && t-lastLowT>0.85 && Math.random()<0.18){
+      const full=Math.random()<0.35;
+      const laneIdx=Math.floor(Math.random()*3);
+      obstacles.push({type:'over', z:1, lanes: full?[0,1,2]:[laneIdx], lane: full?1:laneIdx, cc:false});
+      overCd=2.2;
       return;
     }
     // Full line of low walls across all three lanes — jumping is the only option
     if(t>20 && r<Math.min(0.24, 0.10+t*0.0012)){
       for(let l=0;l<3;l++) obstacles.push({lane:l, z:1, type:'low', cc:false});
+      lastLowT=t;
       if(Math.random()<0.5){ // bone arc over the middle shows the way
         const dzs=[-0.11,-0.055,0,0.055,0.11], hs=[12,58,88,58,12];
         for(let k=0;k<5;k++) bones.push({lane:1, z:1+dzs[k], h:hs[k], t:Math.random()*6.28, mag:false});
@@ -593,6 +607,7 @@
         for(let k=0;k<5;k++) bones.push({lane, z:1+dzs[k], h:hs[k], t:Math.random()*6.28, mag:false});
       }
     }
+    lastLowT=t;
   }
   function spawnBonePattern(){
     if(Math.random()<0.6){
@@ -651,6 +666,7 @@
     if(goldT>0)goldT=Math.max(0,goldT-dt);
     if(invulnT>0)invulnT=Math.max(0,invulnT-dt);
     if(tallCd>0)tallCd-=dt;
+    if(overCd>0)overCd-=dt;
     if(dog.jumpBuf>0)dog.jumpBuf-=dt;
 
     const targetX=laneX(dog.lane,0);
@@ -700,12 +716,15 @@
 
     for(let i=obstacles.length-1;i>=0;i--){
       const o=obstacles[i]; const zOld=o.z; o.z-=dz;
-      if(o.z<COLLIDE_Z && zOld>0 && o.lane===dog.lane){
-        const clear = o.type==='tall' ? TALL_CLEAR : LOW_CLEAR;
-        if(dog.jump<clear && invulnT<=0){
+      const inLane = o.lanes ? o.lanes.indexOf(dog.lane)!==-1 : o.lane===dog.lane;
+      if(o.z<COLLIDE_Z && zOld>0 && inLane){
+        const hit = o.type==='over'
+          ? dog.jump>OVER_HIT
+          : dog.jump < (o.type==='tall' ? TALL_CLEAR : LOW_CLEAR);
+        if(hit && invulnT<=0){
           if(shield){
             shield=false; invulnT=1.2; shake=8;
-            sndShield(); burst(laneX(o.lane,o.z), groundY(o.z)-24);
+            sndShield(); burst(laneX(dog.lane,Math.max(o.z,0.01)), groundY(Math.max(o.z,0.01))-(o.type==='over'?120:24));
             popup(dog.sx, GROUND_Y-dog.jump-110, 'Helmet saved you!', true);
             obstacles.splice(i,1); continue;
           }
@@ -1007,7 +1026,31 @@
     ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
     ctx.fillStyle='rgba(51,38,26,0.25)'; ctx.beginPath(); ctx.ellipse(0,4,46,9,0,0,7); ctx.fill();
     ctx.lineWidth=3; ctx.strokeStyle='#33261A';
-    if(o.type==='tall'){
+    if(o.type==='over'){
+      const half = o.lanes.length===3 ? 170 : 46;
+      // post-base shadows
+      ctx.fillStyle='rgba(51,38,26,0.25)';
+      ctx.beginPath(); ctx.ellipse(-half-4,4,14,6,0,0,7); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(half+4,4,14,6,0,0,7); ctx.fill();
+      // posts
+      ctx.fillStyle='#8E3021';
+      ctx.fillRect(-half-8,-190,8,190); ctx.fillRect(half,-190,8,190);
+      ctx.strokeRect(-half-8,-190,8,190); ctx.strokeRect(half,-190,8,190);
+      // banner panel with open air below it
+      ctx.fillStyle='#243B53'; roundRect(-half-10,-192,half*2+20,46,6); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#D9A23F'; ctx.fillRect(-half-10,-192,half*2+20,7);
+      // bunting flags along the bottom edge
+      ctx.fillStyle='#F4E8D2'; ctx.lineWidth=2;
+      for(let bx=-half+4; bx<half-16; bx+=24){
+        ctx.beginPath(); ctx.moveTo(bx,-146); ctx.lineTo(bx+18,-146); ctx.lineTo(bx+9,-132); ctx.closePath();
+        ctx.fill(); ctx.stroke();
+      }
+      ctx.lineWidth=3;
+      ctx.fillStyle='#F4E8D2';
+      ctx.font='400 '+(o.lanes.length===3?26:15)+'px "Alfa Slab One",serif';
+      ctx.textAlign='center';
+      ctx.fillText('STAY LOW',0,-158);
+    } else if(o.type==='tall'){
       // posts
       ctx.fillStyle='#8E3021';
       ctx.fillRect(-46,-150,8,150); ctx.fillRect(38,-150,8,150);
