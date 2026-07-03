@@ -272,7 +272,7 @@
   window.addEventListener('resize',resize);
 
   // ---------- Perspective world ----------
-  const VP={x:VW/2, y:268};  // horizon raised so the action sits higher on phones
+  const VP={x:VW/2, y:190};  // high horizon: less dead sky, full-length runway
   const GROUND_Y=508;        // player plane ~68% down: the bottom third is thumb space
   const LANE_W=118;
   const PZ=4;
@@ -399,8 +399,8 @@
     dog={lane:1, sx:laneX(1,0), jump:0, jvel:0, grounded:true,
          canDouble:true, flipT:0, landT:0, runT:0, jumpBuf:0};
     obstacles=[]; bones=[]; powerups=[]; particles=[]; popups=[];
-    clouds=[]; for(let i=0;i<4;i++) clouds.push({x:Math.random()*VW, y:24+Math.random()*140, w:50+Math.random()*60, sp:5+Math.random()*7});
-    gulls=[]; for(let i=0;i<2;i++) gulls.push({x:Math.random()*VW, y:40+Math.random()*110, sp:14+Math.random()*10, f:Math.random()*6.28});
+    clouds=[]; for(let i=0;i<4;i++) clouds.push({x:Math.random()*VW, y:16+Math.random()*72, w:50+Math.random()*60, sp:5+Math.random()*7});
+    gulls=[]; for(let i=0;i<2;i++) gulls.push({x:Math.random()*VW, y:26+Math.random()*74, sp:14+Math.random()*10, f:Math.random()*6.28});
     scenery=[]; sceneT=0.3;
     speed=265; obstT=1.1; boneT=0.6; powT=9; tallCd=0; overCd=0; lastLowT=-9;
     scoreF=0; bonesGot=0; shake=0; gameTime=0; lastInn=1; trackScroll=0;
@@ -692,8 +692,8 @@
     if(dog.flipT>0)dog.flipT=Math.max(0,dog.flipT-dt/0.5);
     if(dog.landT>0)dog.landT=Math.max(0,dog.landT-dt*7);
 
-    for(const c of clouds){ c.x-=c.sp*dt; if(c.x<-c.w){ c.x=VW+c.w; c.y=24+Math.random()*140; } }
-    for(const gu of gulls){ gu.x-=gu.sp*dt; gu.f+=dt*7; if(gu.x<-20){ gu.x=VW+20; gu.y=40+Math.random()*110; } }
+    for(const c of clouds){ c.x-=c.sp*dt; if(c.x<-c.w){ c.x=VW+c.w; c.y=16+Math.random()*72; } }
+    for(const gu of gulls){ gu.x-=gu.sp*dt; gu.f+=dt*7; if(gu.x<-20){ gu.x=VW+20; gu.y=26+Math.random()*74; } }
 
     // trackside scenery rushes past like the obstacles do
     sceneT-=dt;
@@ -838,21 +838,24 @@
       ctx.quadraticCurveTo(gu.x+3,gu.y-4-fl,gu.x+7,gu.y);
       ctx.stroke();
     }
-    // neighborhood skyline behind the park (silhouettes)
+    // skyline & ballpark structures hang off the horizon line
+    const W0=VP.y-42; // top of the outfield wall
+    // neighborhood silhouettes
     ctx.fillStyle='rgba(51,38,26,0.32)';
-    const roofs=[[6,182,40,44],[52,192,34,34],[196,188,44,38],[318,184,38,42],[362,194,34,32]];
-    for(const [hx,hy,hw,hh] of roofs){
-      ctx.fillRect(hx,hy,hw,226-hy);
-      ctx.beginPath(); ctx.moveTo(hx-5,hy); ctx.lineTo(hx+hw/2,hy-16); ctx.lineTo(hx+hw+5,hy); ctx.closePath(); ctx.fill();
+    const roofs=[[6,38,40],[52,30,34],[196,34,44],[318,36,38],[362,28,34]];
+    for(const [hx,rh,hw] of roofs){
+      const hy=W0-rh;
+      ctx.fillRect(hx,hy,hw,rh);
+      ctx.beginPath(); ctx.moveTo(hx-5,hy); ctx.lineTo(hx+hw/2,hy-14); ctx.lineTo(hx+hw+5,hy); ctx.closePath(); ctx.fill();
     }
     // distant palms
     for(const px of [104,250,404]){
       ctx.strokeStyle='rgba(51,38,26,0.32)'; ctx.lineWidth=5;
-      ctx.beginPath(); ctx.moveTo(px,226); ctx.quadraticCurveTo(px+4,200,px+7,182); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px,W0); ctx.quadraticCurveTo(px+4,W0-24,px+7,W0-38); ctx.stroke();
       ctx.lineWidth=3.4;
       for(const a of [-2.7,-2.1,-1.4,-0.7,0]){
-        ctx.beginPath(); ctx.moveTo(px+7,182);
-        ctx.quadraticCurveTo(px+7+Math.cos(a)*13,182+Math.sin(a)*13-6,px+7+Math.cos(a)*24,182+Math.sin(a)*17);
+        ctx.beginPath(); ctx.moveTo(px+7,W0-38);
+        ctx.quadraticCurveTo(px+7+Math.cos(a)*12,W0-38+Math.sin(a)*12-6,px+7+Math.cos(a)*22,W0-38+Math.sin(a)*16);
         ctx.stroke();
       }
     }
@@ -860,21 +863,22 @@
     const glow=0.55+Math.sin(gameTime*3)*0.15;
     for(const lx of [70,348]){
       ctx.strokeStyle='rgba(51,38,26,0.45)'; ctx.lineWidth=5;
-      ctx.beginPath(); ctx.moveTo(lx,226); ctx.lineTo(lx,164); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(lx,W0); ctx.lineTo(lx,W0-50); ctx.stroke();
       ctx.fillStyle='rgba(51,38,26,0.45)';
-      ctx.fillRect(lx-19,150,38,16);
+      ctx.fillRect(lx-19,W0-64,38,14);
       ctx.fillStyle='rgba(217,162,63,'+glow.toFixed(2)+')';
       for(let r=0;r<2;r++) for(let cix=0;cix<4;cix++){
-        ctx.beginPath(); ctx.arc(lx-13+cix*8.7, 154+r*8, 2.6, 0, 7); ctx.fill();
+        ctx.beginPath(); ctx.arc(lx-13+cix*8.7, W0-59+r*7, 2.4, 0, 7); ctx.fill();
       }
     }
+    // bleachers + outfield wall
     ctx.fillStyle='rgba(51,38,26,0.22)';
-    for(let i=0;i<9;i++){ const bx=i*50-10, bh=16+((i*37)%26); ctx.fillRect(bx, 226-bh, 40, bh); }
-    ctx.fillStyle='#243B53'; ctx.fillRect(0,226,VW,48);
+    for(let i=0;i<9;i++){ const bx=i*50-10, bh=14+((i*37)%22); ctx.fillRect(bx, W0-bh, 40, bh); }
+    ctx.fillStyle='#243B53'; ctx.fillRect(0,W0,VW,48);
     ctx.fillStyle='#D9A23F'; ctx.fillRect(0,VP.y,VW,6);
     ctx.fillStyle='rgba(244,232,210,0.9)';
     ctx.font='400 15px "Alfa Slab One",serif'; ctx.textAlign='center';
-    ctx.fillText('PITCH IT TO ME STRAIGHT',VW/2,256);
+    ctx.fillText('PITCH IT TO ME STRAIGHT',VW/2,VP.y-12);
     ctx.fillStyle='#C9A063'; ctx.fillRect(0,VP.y+6,VW,VH-VP.y-6);
     ctx.strokeStyle='rgba(246,238,221,0.75)'; ctx.lineWidth=3;
     for(const off of [-1.5,-0.5,0.5,1.5]){
